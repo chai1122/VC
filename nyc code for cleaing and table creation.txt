@@ -1,0 +1,278 @@
+CREATE TABLE Vendor
+(
+VendorID int not null IDENTITY,
+VendorName varchar(30) not null,
+CONSTRAINT pk_vendorID PRIMARY KEY (VendorID)
+)
+CREATE TABLE CabType
+(
+CabTypeID int not null IDENTITY,
+CabColor varchar(30) not null,
+CONSTRAINT pk_cabTypeID PRIMARY KEY (CabTypeID)
+)
+CREATE TABLE RateCode
+(
+RateCodeID int not null IDENTITY,
+RateCodeName varchar(30) not null,
+CONSTRAINT pk_rateCodeID PRIMARY KEY (RateCodeID)
+)
+12. APPENDIX 
+CREATE TABLE TripType
+(
+TripTypeID int not null IDENTITY,
+TypeName varchar(30) not null,
+CONSTRAINT pk_tripTypeID PRIMARY KEY (TripTypeID)
+)
+CREATE TABLE StoreFwdFlag
+(
+FlagID char(1) not null,
+FlagStatusName varchar(30) not null,
+CONSTRAINT pk_flagID PRIMARY KEY (FlagID)
+)
+Create TABLE Payment
+(
+PaymentId int not null IDENTITY,
+PaymentType varchar(30) not null,
+CONSTRAINT pk_paymentID PRIMARY KEY (PaymentId)
+)
+INSERT INTO Vendor VALUES 
+('Creative Mobile Technologies'),
+('VeriFone Inc.');
+INSERT INTO CabType VALUES 
+('Yellow'),
+37 | P a g e
+('Green');
+INSERT INTO RateCode VALUES 
+('Standard rate'),
+('JFK'),
+('Newark'),
+('Nassau or Westchester'),
+('Negotiated fare'),
+('Group ride');
+INSERT INTO Payment VALUES
+('Credit card'),
+('Cash'),
+('No charge'),
+('Dispute'),
+('Unknown')
+INSERT INTO TripType values
+('Street-hail'),
+('Dispatch')
+INSERT INTO StoreFwdFlag values
+('Y','store and forward trip'),
+('N', ' not a store and forward trip')
+CREATE TABLE GreenTripDetails
+(
+TripID int not null IDENTITY,
+VendorID int not null,
+LpepPickupDatetime datetime not NULL,
+LpepDropoffDatetime datetime not NULL,
+CabTypeID int not null,
+StoreAndFwdFlag char(1) not null,
+RateCodeID int not null,
+PULocationID int not null,
+DOLocationID int not null,
+PassengerCount int not null,
+TripDistance float not NULL,
+FareAmount float not NULL,
+Extra float not NULL,
+MtaTax float not NULL,
+TipAmount float not NULL,
+TollsAmount float not NULL,
+ImprovementSurcharge float not NULL,
+TotalAmount float not NULL,
+PaymentId int not NULL,
+TripTypeID int not NULL,
+CongestionSurcharge float not NULL,
+CONSTRAINT pk_gTypeID PRIMARY KEY (TripID),
+CONSTRAINT fk_vendorID FOREIGN KEY (VendorID) REFERENCES 
+Vendor (VendorID),
+CONSTRAINT fk_sandf FOREIGN KEY (StoreAndFwdFlag) 
+REFERENCES StoreFwdFlag (FlagID),
+CONSTRAINT fk_rateCodeID FOREIGN KEY (RateCodeID) 
+REFERENCES RateCode (RateCodeID),
+CONSTRAINT fk_paymentId FOREIGN KEY (PaymentId) 
+REFERENCES Payment (PaymentId),
+39 | P a g e
+CONSTRAINT fk_tripTypeID FOREIGN KEY (TripTypeID) REFERENCES 
+TripType (TripTypeID),
+CONSTRAINT fk_cabTypeID FOREIGN KEY (CabTypeID) REFERENCES 
+CabType (CabTypeID)
+)
+INSERT INTO GreenTripDetails
+(VendorID, LpepPickupDatetime, LpepDropoffDatetime, CabTypeID, 
+StoreAndFwdFlag, RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, TripTypeID, 
+CongestionSurcharge)
+Select VendorID, lpep_pickup_datetime,lpep_dropoff_datetime,1, 
+store_and_fwd_flag, RateCodeID, PULocationID,
+DOLocationID, passenger_count, trip_distance, fare_amount, Extra, mta_tax, 
+tip_amount, tolls_amount,
+improvement_surcharge, total_amount, payment_type, trip_type, 
+congestion_surcharge from 
+cleaned_green_tripdata_2020_01
+select * from cleaned_yellow_trip where trip_distance =0 or trip_distance < 1
+delete from cleaned_yellow_trip where trip_distance =0 or trip_distance < 1
+delete from cleaned_yellow_trip where 
+VendorID is null 
+or
+tpep_pickup_datetime is null
+or 
+tpep_dropoff_datetime is null
+or
+store_and_fwd_flag is null
+or
+(RatecodeID is null or RatecodeID =0 or RatecodeID=99)
+or
+(PULocationID is null or PULocationID =0)
+or 
+(DOLocationID is null or DOLocationID =0)
+or 
+(passenger_count is null or passenger_count =0)
+or 
+trip_distance is null
+CREATE TABLE yellowTripDetails
+(
+TripID int not null IDENTITY,
+VendorID int not null,
+TpepPickupDatetime datetime not NULL,
+TpepDropoffDatetime datetime not NULL,
+CabTypeID int not null,
+StoreAndFwdFlag char(1) not null,
+RateCodeID int not null,
+PULocationID int not null,
+DOLocationID int not null,
+PassengerCount int not null,
+TripDistance float not NULL,
+FareAmount float not NULL,
+Extra float not NULL,
+MtaTax float not NULL,
+
+TipAmount float not NULL,
+TollsAmount float not NULL,
+ImprovementSurcharge float not NULL,
+TotalAmount float not NULL,
+PaymentId int not NULL,
+CongestionSurcharge float not NULL,
+CONSTRAINT pk_yTypeID PRIMARY KEY (TripID),
+CONSTRAINT fk_yvendorID FOREIGN KEY (VendorID) REFERENCES 
+Vendor (VendorID),
+CONSTRAINT fk_ysandf FOREIGN KEY (StoreAndFwdFlag) 
+REFERENCES StoreFwdFlag (FlagID),
+CONSTRAINT fk_yrateCodeID FOREIGN KEY (RateCodeID) 
+REFERENCES RateCode (RateCodeID),
+CONSTRAINT fk_ypaymentId FOREIGN KEY (PaymentId) 
+REFERENCES Payment (PaymentId),
+CONSTRAINT fk_ycabTypeID FOREIGN KEY (CabTypeID) 
+REFERENCES CabType (CabTypeID)
+)
+INSERT INTO yellowTripDetails
+(VendorID, TpepPickupDatetime, TpepDropoffDatetime, CabTypeID, 
+StoreAndFwdFlag, RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, CongestionSurcharge)
+Select VendorID, tpep_pickup_datetime,tpep_dropoff_datetime,2, 
+store_and_fwd_flag, RateCodeID, PULocationID,
+DOLocationID, passenger_count, trip_distance, fare_amount, Extra, mta_tax, 
+tip_amount, tolls_amount,
+improvement_surcharge, total_amount, payment_type, congestion_surcharge from 
+cleaned_yellow_trip
+CREATE TABLE NycTripDetails
+(
+TripID int not null IDENTITY,
+VendorID int not null,
+PickupDatetime datetime not NULL,
+DropoffDatetime datetime not NULL,
+CabTypeID int not null,
+StoreAndFwdFlag char(1) not null,
+RateCodeID int not null,
+PULocationID int not null,
+DOLocationID int not null,
+PassengerCount int not null,
+TripDistance float not NULL,
+FareAmount float not NULL,
+Extra float not NULL,
+MtaTax float not NULL,
+TipAmount float not NULL,
+TollsAmount float not NULL,
+ImprovementSurcharge float not NULL,
+TotalAmount float not NULL,
+PaymentId int not NULL,
+CongestionSurcharge float not NULL,
+TripTypeID int not NULL,
+CONSTRAINT pk_nycTypeID PRIMARY KEY (TripID),
+CONSTRAINT fk_nyctripTypeID FOREIGN KEY (TripTypeID) 
+REFERENCES TripType (TripTypeID),
+CONSTRAINT fk_nycvendorID FOREIGN KEY (VendorID) 
+REFERENCES Vendor (VendorID),
+43 | P a g e
+CONSTRAINT fk_nycsandf FOREIGN KEY (StoreAndFwdFlag) 
+REFERENCES StoreFwdFlag (FlagID),
+CONSTRAINT fk_nycrateCodeID FOREIGN KEY (RateCodeID) 
+REFERENCES RateCode (RateCodeID),
+CONSTRAINT fk_nycpaymentId FOREIGN KEY (PaymentId) 
+REFERENCES Payment (PaymentId),
+CONSTRAINT fk_nyccabTypeID FOREIGN KEY (CabTypeID) 
+REFERENCES CabType (CabTypeID)
+)
+Alter table NycTripDetails 
+add constraint fk_pulocationID FOREIGN KEY(PULocationID) references 
+TaxiZone(locationID)
+INSERT INTO NycTripDetails
+(VendorID, PickupDatetime, DropoffDatetime, CabTypeID, StoreAndFwdFlag, 
+RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, CongestionSurcharge, 
+TripTypeID)
+Select VendorID, LpepPickupDatetime,LpepDropoffDatetime,CabTypeID, 
+StoreAndFwdFlag, RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, CongestionSurcharge, TripTypeID 
+from 
+GreenTripDetails;
+INSERT INTO NycTripDetails
+(VendorID, PickupDatetime, DropoffDatetime, CabTypeID, StoreAndFwdFlag, 
+RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, CongestionSurcharge, 
+TripTypeID)
+Select VendorID, TpepPickupDatetime,TpepDropoffDatetime,CabTypeID, 
+StoreAndFwdFlag, RateCodeID, PULocationID,
+DOLocationID, PassengerCount, TripDistance, FareAmount, Extra, MtaTax, 
+TipAmount, TollsAmount,
+ImprovementSurcharge, TotalAmount, PaymentId, CongestionSurcharge, null from 
+YellowTripDetails;
+delete from TaxiZones where locationID is null 
+or shape_area is null or zone is null or borough is null;
+delete from GreenTripDetails where PUlocationID not in (select Distinct(locationID) 
+from TaxiZones)
+or DOlocationID not in (select Distinct(locationID) from TaxiZones)
+delete from YellowTripDetails where PUlocationID not in (select Distinct(locationID) 
+from TaxiZones)
+or DOlocationID not in (select Distinct(locationID) from TaxiZones)
+CREATE TABLE TaxiZone
+(
+LocationID int not NULL,
+zone nvarchar(255) not NULL,
+borough nvarchar(255) not null,
+constraint pk_locationID primary key(locationID)
+)
+
+delete from taxiZones where locationId = 56 and objectId = 57
+Insert into TaxiZone
+(LocationID, zone, borough)
+Select LocationID, zone, borough from taxiZones;
+insert into Taxizone values
+(103, 'Governors Island/Ellis Island/Liberty Island', 'Manhattan')
+Select * from NycTripDetails where PUlocationID not in (select locationid from 
+taxizone)
+or DOlocationID not in (select locationid from taxizone)
+Alter table NycTripDetails 
+add constraint fk_pulocationID FOREIGN KEY(PULocationID) references 
+TaxiZone(locationID)
